@@ -1,6 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 app = FastAPI()
@@ -18,6 +18,10 @@ class Note(NoteCreate):
     created_at: datetime
     updated_at: datetime
 
+
+@app.get("/notes", response_model=List[Note])
+def get_all_notes():
+    return notes_db
 
 @app.post("/notes", status_code=201)
 def create_note(note: NoteCreate):
@@ -37,3 +41,11 @@ def create_note(note: NoteCreate):
     notes_db.append(new_note)
 
     return new_note
+
+
+@app.get("/notes{note_id}", response_model=Note, responses={ 404: { "detail": "Note not found" } })
+def get_note_by_id(note_id: int):
+    for note in notes_db:
+        if note.id == note_id:
+            return note 
+    raise HTTPException(status_code=404, detail="Note not found")
