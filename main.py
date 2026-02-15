@@ -49,3 +49,16 @@ def get_note_by_id(note_id: int):
         if note.id == note_id:
             return note 
     raise HTTPException(status_code=404, detail="Note not found")
+
+
+@app.put("/notes/{note_id}", response_model=Note, responses={ 404: { "detail": "Note not found" } })
+def update_note_by_id(note_id: int, note_update: NoteCreate):
+    for note in notes_db:
+        if note.id == note_id:
+            note.title = note_update.title 
+            note.content = note_update.content 
+            note.tags = note_update.tags
+            note.updated_at = datetime.now()
+            return note
+    
+    raise HTTPException(status_code=404, detail="Note not found")
