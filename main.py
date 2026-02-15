@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
@@ -20,7 +20,7 @@ class Note(NoteCreate):
 
 
 @app.get("/notes", response_model=List[Note])
-def get_all_notes(skip: int = 0, limit: int = 10):
+def get_all_notes(skip: int = Query(0, ge=0), limit: int = Query(10, ge=1, le=100)):
     return notes_db[skip : skip + limit]
 
 @app.post("/notes", status_code=201, response_model=Note)
