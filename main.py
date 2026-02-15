@@ -7,6 +7,8 @@ app = FastAPI()
 
 notes_db = []
 
+
+#TODO tags is Optional it needs to be created empty list instead of None I guess
 class NoteCreate(BaseModel):
     title: str
     content: str
@@ -23,7 +25,7 @@ class Note(NoteCreate):
 def get_all_notes():
     return notes_db
 
-@app.post("/notes", status_code=201)
+@app.post("/notes", status_code=201, response_model=Note)
 def create_note(note: NoteCreate):
     new_id = 1 if not notes_db else max(note.id for note in notes_db) + 1
     created_at = datetime.now()
@@ -43,7 +45,7 @@ def create_note(note: NoteCreate):
     return new_note
 
 
-@app.get("/notes{note_id}", response_model=Note, responses={ 404: { "detail": "Note not found" } })
+@app.get("/notes/{note_id}", response_model=Note, responses={ 404: { "detail": "Note not found" } })
 def get_note_by_id(note_id: int):
     for note in notes_db:
         if note.id == note_id:
@@ -60,5 +62,14 @@ def update_note_by_id(note_id: int, note_update: NoteCreate):
             note.tags = note_update.tags
             note.updated_at = datetime.now()
             return note
+    
+    raise HTTPException(status_code=404, detail="Note not found")
+
+@app.delete("/notes/{note_id}", status_code=204, responses={ 404: { "detail": "Note not found" } })
+def delete_note_by_id(note_id: int):
+    for idx, note in enumerate(notes_db):
+        if note.id == note_id:
+            notes_db.pop(idx)
+            return
     
     raise HTTPException(status_code=404, detail="Note not found")
