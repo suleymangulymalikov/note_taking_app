@@ -10,12 +10,6 @@ This API supports full CRUD operations along with filtering, search, and paginat
 - FastAPI
 - Pydantic
 
-Installed using:
-
-```bash
-pip install "fastapi[standard]"
-```
-
 ## 📂 Project Structure
 
 ```
@@ -60,7 +54,7 @@ source .venv/bin/activate
 ### 3️⃣ Install dependencies
 
 ```bash
-pip install "fastapi[standard]"
+pip install -r requirements.txt
 ```
 
 ### 4️⃣ Run the development server
